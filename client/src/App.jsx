@@ -13,6 +13,7 @@ function App() {
   const [treatmentError, setTreatmentError] = useState("");
 
   const [selectedTreatmentName, setSelectedTreatmentName] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch hospitals
   useEffect(() => {
@@ -50,6 +51,16 @@ function App() {
         treatment.name === selectedTreatmentName
     )
   : [];
+
+      const filteredTreatments = treatments.filter((treatment) => {
+  const search = searchTerm.toLowerCase();
+
+  return (
+    treatment.name?.toLowerCase().includes(search) ||
+    treatment.category?.toLowerCase().includes(search) ||
+    treatment.hospital?.name?.toLowerCase().includes(search)
+  );
+});
 
     const cheapestPrice =
      comparisonTreatments.length > 0
@@ -191,6 +202,17 @@ function App() {
               <h2>Treatments</h2>
             </div>
 
+              <div className="treatment-search">
+            <input
+              type="text"
+              placeholder="Search treatment..."
+              value={searchTerm}
+              onChange={(event) =>
+              setSearchTerm(event.target.value)
+    }
+  />
+</div>
+
             <p>
               Compare treatment prices and details across
               hospitals.
@@ -218,7 +240,7 @@ function App() {
             )}
 
           <div className="treatment-grid">
-            {treatments.map((treatment) => (
+            {filteredTreatments.map((treatment) => (
               <article
                 className="treatment-card"
                 key={treatment._id}

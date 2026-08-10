@@ -418,3 +418,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.treatment-search {
+  margin-top: 18px;
+}
+
+.treatment-search input {
+  width: 320px;
+  max-width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #101828;
+  font-size: 14px;
+  outline: none;
+}
+
+.treatment-search input:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+@media (max-width: 700px) {
+  .treatment-search input {
+    width: 100%;
+  }
+}
