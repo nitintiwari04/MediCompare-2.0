@@ -19,10 +19,10 @@ const createTreatment = async (req, res) => {
   }
 };
 
-// Get all treatments
+// Get all active treatments
 const getTreatments = async (req, res) => {
   try {
-    const treatments = await Treatment.find()
+    const treatments = await Treatment.find({ isActive: true })
       .populate("hospital", "name city address");
 
     res.status(200).json({
@@ -65,7 +65,72 @@ const getTreatmentById = async (req, res) => {
   }
 };
 
+// Update treatment
+const updateTreatment = async (req, res) => {
+  try {
+    const treatment = await Treatment.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        lastUpdated: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("hospital", "name city address");
 
+    if (!treatment) {
+      return res.status(404).json({
+        success: false,
+        message: "Treatment not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Treatment updated successfully",
+      data: treatment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update treatment",
+      error: error.message,
+    });
+  }
+};
+
+// Soft delete treatment
+const deleteTreatment = async (req, res) => {
+  try {
+    const treatment = await Treatment.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    );
+
+    if (!treatment) {
+      return res.status(404).json({
+        success: false,
+        message: "Treatment not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Treatment deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete treatment",
+      error: error.message,
+    });
+  }
+};
+
+// Compare treatment prices
 const compareTreatmentPrices = async (req, res) => {
   try {
     const { name } = req.query;
@@ -103,6 +168,7 @@ module.exports = {
   createTreatment,
   getTreatments,
   getTreatmentById,
-  compareTreatmentPrices
+  updateTreatment,
+  deleteTreatment,
+  compareTreatmentPrices,
 };
-
