@@ -51,10 +51,15 @@ const hospitalSchema = new mongoose.Schema(
     ],
 
     rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0,
+     type: Number,
+     min: 0,
+     max: 5,
+     default: 0,
+     },
+
+     reviewCount: {
+       type: Number,
+       default: 0,
     },
 
     location: {
