@@ -15,6 +15,7 @@ function App() {
   const [selectedTreatmentName, setSelectedTreatmentName] = useState(null);
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [comparisonSort, setComparisonSort] = useState("price-asc");
 
   // Fetch hospitals
   useEffect(() => {
@@ -52,6 +53,26 @@ function App() {
         treatment.name === selectedTreatmentName
     )
   : [];
+
+      const sortedComparisonTreatments = [
+  ...comparisonTreatments,
+].sort((a, b) => {
+  if (comparisonSort === "price-asc") {
+    return a.price - b.price;
+  }
+
+  if (comparisonSort === "price-desc") {
+    return b.price - a.price;
+  }
+
+  if (comparisonSort === "hospital") {
+    return (a.hospital?.name || "").localeCompare(
+      b.hospital?.name || ""
+    );
+  }
+
+  return 0;
+});
 
    const hospitalTreatments = selectedHospital
   ? treatments.filter(
@@ -488,26 +509,46 @@ function App() {
         {/* Comparison */}
         {selectedTreatmentName && (
   <section className="comparison-section">
-    <div className="section-heading">
-      <div>
-        <p className="eyebrow">
-          TREATMENT COMPARISON
-        </p>
+     <div className="section-heading">
+  <div>
+    <p className="eyebrow">TREATMENT COMPARISON</p>
 
-        <h2>{selectedTreatmentName}</h2>
+    <h2>{selectedTreatmentName}</h2>
 
-        <p>
-          Compare prices across all available hospitals.
-        </p>
-      </div>
+    <div className="comparison-sort">
+      <label htmlFor="comparison-sort">
+        Sort by:
+      </label>
 
-      <button
-        className="close-button"
-        onClick={() => setSelectedTreatmentName(null)}
+      <select
+        id="comparison-sort"
+        value={comparisonSort}
+        onChange={(event) =>
+          setComparisonSort(event.target.value)
+        }
       >
-        Clear
-      </button>
+        <option value="price-asc">
+          Lowest Price
+        </option>
+
+        <option value="price-desc">
+          Highest Price
+        </option>
+
+        <option value="hospital">
+          Hospital Name
+        </option>
+      </select>
     </div>
+  </div>
+
+  <button
+    className="close-button"
+    onClick={() => setSelectedTreatmentName(null)}
+  >
+    Clear
+  </button>
+</div>
 
     <div className="comparison-table-wrapper">
       <table className="comparison-table">
@@ -522,7 +563,7 @@ function App() {
         </thead>
 
         <tbody>
-          {comparisonTreatments.map((treatment) => {
+           {sortedComparisonTreatments.map((treatment) => {
             const isCheapest =
               treatment.price === cheapestPrice;
 
