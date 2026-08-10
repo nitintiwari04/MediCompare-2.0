@@ -4,9 +4,17 @@ import "./App.css";
 
 function App() {
   const [hospitals, setHospitals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [treatments, setTreatments] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+  const [treatmentLoading, setTreatmentLoading] = useState(true);
+
+  const [error, setError] = useState("");
+  const [treatmentError, setTreatmentError] = useState("");
+
+  const [selectedTreatmentName, setSelectedTreatmentName] = useState(null);
+
+  // Fetch hospitals
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/hospitals")
@@ -20,6 +28,37 @@ function App() {
         setLoading(false);
       });
   }, []);
+
+  // Fetch treatments
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/treatments")
+      .then((response) => {
+        setTreatments(response.data.data);
+        setTreatmentLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setTreatmentError("Unable to load treatments");
+        setTreatmentLoading(false);
+      });
+  }, []);
+
+    const comparisonTreatments = selectedTreatmentName
+     ? treatments.filter(
+      (treatment) =>
+        treatment.name === selectedTreatmentName
+    )
+  : [];
+
+    const cheapestPrice =
+     comparisonTreatments.length > 0
+      ? Math.min(
+        ...comparisonTreatments.map(
+          (treatment) => treatment.price
+        )
+      )
+    : null;
 
   return (
     <div className="app">
@@ -36,6 +75,7 @@ function App() {
       </header>
 
       <main>
+        {/* Hero */}
         <section className="hero">
           <div className="hero-content">
             <p className="eyebrow">HEALTHCARE PRICE TRANSPARENCY</p>
@@ -64,6 +104,7 @@ function App() {
           </div>
         </section>
 
+        {/* Hospitals */}
         <section id="hospitals" className="hospitals-section">
           <div className="section-heading">
             <div>
@@ -76,9 +117,13 @@ function App() {
             </p>
           </div>
 
-          {loading && <p className="status">Loading hospitals...</p>}
+          {loading && (
+            <p className="status">Loading hospitals...</p>
+          )}
 
-          {error && <p className="status error">{error}</p>}
+          {error && (
+            <p className="status error">{error}</p>
+          )}
 
           {!loading && !error && hospitals.length === 0 && (
             <p className="status">No hospitals found.</p>
@@ -86,7 +131,10 @@ function App() {
 
           <div className="hospital-grid">
             {hospitals.map((hospital) => (
-              <article className="hospital-card" key={hospital._id}>
+              <article
+                className="hospital-card"
+                key={hospital._id}
+              >
                 <div className="card-top">
                   <div className="hospital-icon">+</div>
 
@@ -101,12 +149,18 @@ function App() {
                   📍 {hospital.address}, {hospital.city}
                 </p>
 
-                <p className="description">{hospital.description}</p>
+                <p className="description">
+                  {hospital.description}
+                </p>
 
                 <div className="specialties">
-                  {hospital.specialties?.slice(0, 4).map((specialty) => (
-                    <span key={specialty}>{specialty}</span>
-                  ))}
+                  {hospital.specialties
+                    ?.slice(0, 4)
+                    .map((specialty) => (
+                      <span key={specialty}>
+                        {specialty}
+                      </span>
+                    ))}
                 </div>
 
                 <div className="card-footer">
@@ -114,12 +168,194 @@ function App() {
                     {hospital.facilities?.length ?? 0} facilities
                   </span>
 
-                  <button>View Details →</button>
+                  <button>
+                    View Details →
+                  </button>
                 </div>
               </article>
             ))}
           </div>
         </section>
+
+        {/* Treatments */}
+        <section
+          id="treatments"
+          className="treatments-section"
+        >
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">
+                COMPARE HEALTHCARE PRICES
+              </p>
+
+              <h2>Treatments</h2>
+            </div>
+
+            <p>
+              Compare treatment prices and details across
+              hospitals.
+            </p>
+          </div>
+
+          {treatmentLoading && (
+            <p className="status">
+              Loading treatments...
+            </p>
+          )}
+
+          {treatmentError && (
+            <p className="status error">
+              {treatmentError}
+            </p>
+          )}
+
+          {!treatmentLoading &&
+            !treatmentError &&
+            treatments.length === 0 && (
+              <p className="status">
+                No treatments found.
+              </p>
+            )}
+
+          <div className="treatment-grid">
+            {treatments.map((treatment) => (
+              <article
+                className="treatment-card"
+                key={treatment._id}
+              >
+                <div className="treatment-header">
+                  <span className="category">
+                    {treatment.category}
+                  </span>
+
+                  <span className="price">
+                    ₹
+                    {treatment.price?.toLocaleString(
+                      "en-IN"
+                    )}
+                  </span>
+                </div>
+
+                <h3>{treatment.name}</h3>
+
+                <p className="description">
+                  {treatment.description}
+                </p>
+
+                <div className="treatment-details">
+                  <span>
+                    Hospital:{" "}
+                    <strong>
+                      {treatment.hospital?.name}
+                    </strong>
+                  </span>
+
+                  <span>
+                    Duration:{" "}
+                    <strong>
+                      {treatment.duration}
+                    </strong>
+                  </span>
+                </div>
+
+                <button
+                  className="compare-button"
+                   onClick={() =>
+                     setSelectedTreatmentName(treatment.name)
+                  }
+                >
+                  Compare
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Comparison */}
+        {selectedTreatmentName && (
+  <section className="comparison-section">
+    <div className="section-heading">
+      <div>
+        <p className="eyebrow">
+          TREATMENT COMPARISON
+        </p>
+
+        <h2>{selectedTreatmentName}</h2>
+
+        <p>
+          Compare prices across all available hospitals.
+        </p>
+      </div>
+
+      <button
+        className="close-button"
+        onClick={() => setSelectedTreatmentName(null)}
+      >
+        Clear
+      </button>
+    </div>
+
+    <div className="comparison-table-wrapper">
+      <table className="comparison-table">
+        <thead>
+          <tr>
+            <th>Hospital</th>
+            <th>Price</th>
+            <th>Duration</th>
+            <th>Location</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {comparisonTreatments.map((treatment) => {
+            const isCheapest =
+              treatment.price === cheapestPrice;
+
+            return (
+              <tr
+                key={treatment._id}
+                className={
+                  isCheapest ? "cheapest-row" : ""
+                }
+              >
+                <td>
+                  <strong>
+                    {treatment.hospital?.name}
+                  </strong>
+                </td>
+
+                <td>
+                  <strong className="table-price">
+                    ₹
+                    {treatment.price?.toLocaleString(
+                      "en-IN"
+                    )}
+                  </strong>
+                </td>
+
+                <td>{treatment.duration}</td>
+
+                <td>
+                  {treatment.hospital?.city}
+                </td>
+
+                <td>
+                  {isCheapest && (
+                    <span className="best-price">
+                      🏆 Cheapest
+                    </span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </section>
+)}
+
       </main>
     </div>
   );
