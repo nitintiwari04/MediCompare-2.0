@@ -13,6 +13,7 @@ function App() {
   const [treatmentError, setTreatmentError] = useState("");
 
   const [selectedTreatmentName, setSelectedTreatmentName] = useState(null);
+  const [selectedHospital, setSelectedHospital] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch hospitals
@@ -179,14 +180,126 @@ function App() {
                     {hospital.facilities?.length ?? 0} facilities
                   </span>
 
-                  <button>
-                    View Details →
-                  </button>
+                   <button
+                     onClick={() => setSelectedHospital(hospital)}
+                              >
+                      View Details →
+                    </button>
                 </div>
               </article>
             ))}
           </div>
         </section>
+
+         {selectedHospital && (
+  <section className="hospital-details-section">
+    <div className="section-heading">
+      <div>
+        <p className="eyebrow">
+          HOSPITAL DETAILS
+        </p>
+
+        <h2>{selectedHospital.name}</h2>
+
+        <p>
+          Complete information about this healthcare provider.
+        </p>
+      </div>
+
+      <button
+        className="close-button"
+        onClick={() => setSelectedHospital(null)}
+      >
+        Close
+      </button>
+    </div>
+
+    <div className="hospital-details-card">
+      <div className="hospital-details-header">
+        <div className="hospital-large-icon">
+          +
+        </div>
+
+        <div>
+          <h3>{selectedHospital.name}</h3>
+
+          <div className="detail-rating">
+            ★ {selectedHospital.rating ?? "N/A"}
+          </div>
+        </div>
+      </div>
+
+      <p className="hospital-detail-description">
+        {selectedHospital.description}
+      </p>
+
+      <div className="hospital-info-grid">
+        <div>
+          <p className="comparison-label">
+            Location
+          </p>
+
+          <strong>
+            {selectedHospital.address},{" "}
+            {selectedHospital.city}
+          </strong>
+        </div>
+
+        <div>
+          <p className="comparison-label">
+            Phone
+          </p>
+
+          <strong>
+            {selectedHospital.phone || "Not available"}
+          </strong>
+        </div>
+
+        <div>
+          <p className="comparison-label">
+            Email
+          </p>
+
+          <strong>
+            {selectedHospital.email || "Not available"}
+          </strong>
+        </div>
+      </div>
+
+      <div className="hospital-detail-group">
+        <p className="comparison-label">
+          Specialties
+        </p>
+
+        <div className="specialties">
+          {selectedHospital.specialties?.map(
+            (specialty) => (
+              <span key={specialty}>
+                {specialty}
+              </span>
+            )
+          )}
+        </div>
+      </div>
+
+      <div className="hospital-detail-group">
+        <p className="comparison-label">
+          Facilities
+        </p>
+
+        <div className="specialties">
+          {selectedHospital.facilities?.map(
+            (facility) => (
+              <span key={facility}>
+                {facility}
+              </span>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
 
         {/* Treatments */}
         <section

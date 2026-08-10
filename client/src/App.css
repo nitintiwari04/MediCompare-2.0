@@ -445,3 +445,81 @@
     width: 100%;
   }
 }
+
+.hospital-details-section {
+  padding: 80px 7%;
+  background: #f8fafc;
+}
+
+.hospital-details-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e4e9f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(24, 39, 75, 0.05);
+}
+
+.hospital-details-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.hospital-large-icon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #1677ff;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.hospital-details-header h3 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.detail-rating {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.hospital-detail-description {
+  color: #667085;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+.hospital-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid #edf0f4;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.hospital-detail-group {
+  margin-top: 28px;
+}
+
+.hospital-detail-group .specialties {
+  margin-top: 12px;
+}
+
+@media (max-width: 800px) {
+  .hospital-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hospital-details-card {
+    padding: 22px;
+  }
+}
