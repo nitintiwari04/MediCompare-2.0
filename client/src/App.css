@@ -613,3 +613,45 @@
     width: 100%;
   }
 }
+
+/* Hospital Filters */
+
+.hospital-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 14px;
+  margin: 28px 0;
+}
+
+.hospital-filters input,
+.hospital-filters select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hospital-filters input::placeholder {
+  color: #9ca3af;
+}
+
+.hospital-filters input:focus,
+.hospital-filters select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.hospital-filters select {
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .hospital-filters {
+    grid-template-columns: 1fr;
+  }
+}

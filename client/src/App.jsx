@@ -15,6 +15,9 @@ function App() {
   const [selectedTreatmentName, setSelectedTreatmentName] = useState(null);
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hospitalSearch, setHospitalSearch] = useState("");
+  const [hospitalCity, setHospitalCity] = useState("all");
+  const [hospitalSpecialty, setHospitalSpecialty] = useState("all");
   const [comparisonSort, setComparisonSort] = useState("price-asc");
 
   // Fetch hospitals
@@ -82,7 +85,7 @@ function App() {
   : [];
 
       const filteredTreatments = treatments.filter((treatment) => {
-  const search = searchTerm.toLowerCase();
+      const search = searchTerm.toLowerCase();
 
   return (
     treatment.name?.toLowerCase().includes(search) ||
@@ -90,6 +93,44 @@ function App() {
     treatment.hospital?.name?.toLowerCase().includes(search)
   );
 });
+    const filteredHospitals = hospitals.filter((hospital) => {
+  const search = hospitalSearch.toLowerCase();
+
+  const matchesSearch =
+    hospital.name?.toLowerCase().includes(search) ||
+    hospital.city?.toLowerCase().includes(search) ||
+    hospital.description?.toLowerCase().includes(search);
+
+  const matchesCity =
+    hospitalCity === "all" ||
+    hospital.city === hospitalCity;
+
+  const matchesSpecialty =
+    hospitalSpecialty === "all" ||
+    hospital.specialties?.includes(hospitalSpecialty);
+
+  return (
+    matchesSearch &&
+    matchesCity &&
+    matchesSpecialty
+  );
+});
+
+const cities = [
+  ...new Set(
+    hospitals
+      .map((hospital) => hospital.city)
+      .filter(Boolean)
+  ),
+];
+
+const specialties = [
+  ...new Set(
+    hospitals
+      .flatMap((hospital) => hospital.specialties || [])
+      .filter(Boolean)
+  ),
+];
 
     const cheapestPrice =
      comparisonTreatments.length > 0
@@ -165,12 +206,55 @@ function App() {
             <p className="status error">{error}</p>
           )}
 
-          {!loading && !error && hospitals.length === 0 && (
-            <p className="status">No hospitals found.</p>
-          )}
+          {!loading && !error && filteredHospitals.length === 0 && (
+           <p className="status">
+            No hospitals match your filters.
+           </p>
+           )}
+
+          <div className="hospital-filters">
+  <input
+    type="text"
+    placeholder="Search hospitals..."
+    value={hospitalSearch}
+    onChange={(event) =>
+      setHospitalSearch(event.target.value)
+    }
+  />
+
+  <select
+    value={hospitalCity}
+    onChange={(event) =>
+      setHospitalCity(event.target.value)
+    }
+  >
+    <option value="all">All Cities</option>
+
+    {cities.map((city) => (
+      <option key={city} value={city}>
+        {city}
+      </option>
+    ))}
+  </select>
+
+  <select
+    value={hospitalSpecialty}
+    onChange={(event) =>
+      setHospitalSpecialty(event.target.value)
+    }
+  >
+    <option value="all">All Specialties</option>
+
+    {specialties.map((specialty) => (
+      <option key={specialty} value={specialty}>
+        {specialty}
+      </option>
+    ))}
+  </select>
+</div>
 
           <div className="hospital-grid">
-            {hospitals.map((hospital) => (
+            {filteredHospitals.map((hospital) => (
               <article
                 className="hospital-card"
                 key={hospital._id}
