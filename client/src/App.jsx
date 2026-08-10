@@ -53,6 +53,13 @@ function App() {
     )
   : [];
 
+   const hospitalTreatments = selectedHospital
+  ? treatments.filter(
+      (treatment) =>
+        treatment.hospital?._id === selectedHospital._id
+    )
+  : [];
+
       const filteredTreatments = treatments.filter((treatment) => {
   const search = searchTerm.toLowerCase();
 
@@ -297,6 +304,78 @@ function App() {
           )}
         </div>
       </div>
+           <div className="hospital-treatments">
+  <div className="hospital-treatments-heading">
+    <div>
+      <p className="comparison-label">
+        AVAILABLE TREATMENTS
+      </p>
+
+      <h3>
+        Treatments at {selectedHospital.name}
+      </h3>
+    </div>
+  </div>
+
+  {hospitalTreatments.length === 0 ? (
+    <p className="status">
+      No treatments available.
+    </p>
+  ) : (
+    <div className="hospital-treatment-grid">
+      {hospitalTreatments.map((treatment) => (
+        <article
+          className="hospital-treatment-card"
+          key={treatment._id}
+        >
+          <div>
+            <p className="treatment-category">
+              {treatment.category}
+            </p>
+
+            <h4>{treatment.name}</h4>
+
+            <p>
+              {treatment.description}
+            </p>
+          </div>
+
+          <div className="hospital-treatment-footer">
+            <div>
+              <span>Price</span>
+
+              <strong>
+                ₹
+                {treatment.price?.toLocaleString(
+                  "en-IN"
+                )}
+              </strong>
+            </div>
+
+            <div>
+              <span>Duration</span>
+
+              <strong>
+                {treatment.duration}
+              </strong>
+            </div>
+
+            <button
+              className="compare-button"
+              onClick={() =>
+                setSelectedTreatmentName(
+                  treatment.name
+                )
+              }
+            >
+              Compare
+            </button>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+</div>
     </div>
   </section>
 )}
