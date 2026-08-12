@@ -10,12 +10,19 @@ const createReview = async (req, res) => {
   try {
     const { hospital, rating, comment } = req.body;
 
-    if (!hospital || !rating || !comment) {
-      return res.status(400).json({
+    if (!hospital || rating === undefined || !comment) {
+    return res.status(400).json({
         success: false,
         message: "Hospital, rating and comment are required",
-      });
-    }
+    });
+}
+
+if (rating < 1 || rating > 5) {
+    return res.status(400).json({
+        success: false,
+        message: "Rating must be between 1 and 5",
+    });
+}
 
     const hospitalExists = await Hospital.findById(hospital);
 
@@ -95,6 +102,13 @@ const updateReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
 
+    if (rating !== undefined && (rating < 1 || rating > 5)) {
+    return res.status(400).json({
+        success: false,
+        message: "Rating must be between 1 and 5",
+    });
+}
+
     const review = await Review.findOne({
       _id: req.params.id,
       user: req.user.userId,
@@ -137,26 +151,14 @@ const updateReview = async (req, res) => {
   }
 };
 
+
 // Delete own review
 const deleteReview = async (req, res) => {
   try {
     const review = await Review.findOne({
-  _id: req.params.id,
-  user: req.user.userId,
-});
-
-if (!review) {
-  return res.status(404).json({
-    success: false,
-    message: "Review not found",
-  });
-}
-
-const hospitalId = review.hospital;
-
-await Review.findByIdAndDelete(review._id);
-
-await updateHospitalRating(hospitalId);
+      _id: req.params.id,
+      user: req.user.userId,
+    });
 
     if (!review) {
       return res.status(404).json({
@@ -165,11 +167,19 @@ await updateHospitalRating(hospitalId);
       });
     }
 
+    const hospitalId = review.hospital;
+
+    await Review.findByIdAndDelete(review._id);
+
+    await updateHospitalRating(hospitalId);
+
     res.status(200).json({
       success: true,
       message: "Review deleted successfully",
     });
   } catch (error) {
+    console.error("Delete review error:", error);
+
     res.status(500).json({
       success: false,
       message: "Failed to delete review",

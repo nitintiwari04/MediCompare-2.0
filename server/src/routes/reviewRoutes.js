@@ -1,10 +1,10 @@
 const express = require("express");
 
 const {
-  createReview,
-  getHospitalReviews,
-  updateReview,
-  deleteReview,
+    getHospitalReviews,
+    createReview,
+    updateReview,
+    deleteReview
 } = require("../controllers/reviewController");
 
 const { protect } = require("../middleware/authMiddleware");
