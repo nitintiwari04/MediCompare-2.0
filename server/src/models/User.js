@@ -25,8 +25,16 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["patient", "admin"],
             default: "patient"
-        }
+        },
+         savedHospitals: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hospital"
+    }
+]
+        
     },
+    
     {
         timestamps: true
     }
