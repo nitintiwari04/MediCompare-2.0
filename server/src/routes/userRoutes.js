@@ -1,6 +1,6 @@
 const express = require("express");
 
-const {getProfile, saveHospital, removeSavedHospital, getSavedHospitals} = require("../controllers/userController");
+const {getProfile, saveHospital, removeSavedHospital, getSavedHospitals, getMyReviews, getDashboard} = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -10,5 +10,7 @@ router.post("/saved/:hospitalId", protect, saveHospital);
 
 router.delete("/saved/:hospitalId", protect, removeSavedHospital);
 router.get("/saved", protect, getSavedHospitals);
+router.get("/reviews", protect, getMyReviews);
+router.get("/dashboard", protect, getDashboard);
 
 module.exports = router;
